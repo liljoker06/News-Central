@@ -10,9 +10,7 @@ export function Navbar() {
     navigate("/history");
   };
 
-  const handleMenuClick = () => {
-    navigate("/popularite");
-  };
+ 
 
   const handleHomeClick = () => {
     navigate("/");
@@ -31,12 +29,6 @@ export function Navbar() {
             <span className="text-gray-600">
               {user ? `${user.username}` : "Non connecté"}
             </span>
-            <button
-              onClick={handleMenuClick}
-              className="px-4 py-2 text-sm text-blue-600 hover:text-blue-800 transition-colors"
-            >
-              Popular
-            </button>
             <button
               onClick={handleHistoryClick}
               className="px-4 py-2 text-sm text-blue-600 hover:text-blue-800 transition-colors"

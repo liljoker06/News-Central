@@ -29,12 +29,11 @@ export interface HistoryArticle {
   id: string;
   sourceApi: string;
   title: string;
-  source: {
-    name: string;
-    url: string;
-  };
+  source: string; 
+  url: string; 
   publishedAt: string;
-  category: string;
   viewedAt: Date;
+  imageUrl?: string;
 }
+
 

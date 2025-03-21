@@ -4,7 +4,6 @@ import { NewsPage } from "./pages/NewsPage";
 import { HistoryPage } from "./pages/HistoryPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Navbar } from "./components/Navbar";
-import PopularityPage from "./pages/PopularityPage";
 import HomepagePage from "./pages/HomePage";
 import { useAuthStore } from "./store/authStore"; 
 
@@ -33,14 +32,6 @@ function App() {
           element={
             <ProtectedRoute>
               <NewsPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/popularite"
-          element={
-            <ProtectedRoute>
-              <PopularityPage />
             </ProtectedRoute>
           }
         />
