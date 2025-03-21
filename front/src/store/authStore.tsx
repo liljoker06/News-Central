@@ -1,10 +1,10 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { login as apiLogin, AuthResponse } from "../api/auth";
+import { login as apiLogin, register as apiSignup, AuthResponse } from "../api/auth";
 
 interface User {
   id: string;
-  username: string;  // 🔹 Ajout de `username`
+  username: string;
   email: string;
 }
 
@@ -12,6 +12,7 @@ interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
+  signup: (username: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   checkAuth: () => void;
 }
@@ -38,7 +39,7 @@ export const useAuthStore = create<AuthState>()(
         try {
           const data: AuthResponse = await apiLogin(email, password);
           localStorage.setItem("token", data.token);
-          localStorage.setItem("user", JSON.stringify(data.user));  // 🔹 Stocker `username` et `email`
+          localStorage.setItem("user", JSON.stringify(data.user));
 
           set({
             user: data.user,
@@ -47,11 +48,26 @@ export const useAuthStore = create<AuthState>()(
 
           console.log("✅ Connexion réussie :", data.user);
         } catch (error) {
-          if (error instanceof Error) {
-            throw new Error(error.message || "Erreur de connexion");
-          } else {
-            throw new Error("Erreur de connexion");
-          }
+          console.error("❌ Erreur de connexion :", error);
+          throw new Error(error instanceof Error ? error.message : "Erreur de connexion");
+        }
+      },
+
+      signup: async (username: string, email: string, password: string) => {
+        try {
+          const data: AuthResponse = await apiSignup(username, email, password);
+          localStorage.setItem("token", data.token);
+          localStorage.setItem("user", JSON.stringify(data.user));
+
+          set({
+            user: data.user,
+            isAuthenticated: true,
+          });
+
+          console.log("✅ Inscription réussie :", data.user);
+        } catch (error) {
+          console.error("❌ Erreur d'inscription :", error);
+          throw new Error(error instanceof Error ? error.message : "Erreur lors de l'inscription");
         }
       },
 
