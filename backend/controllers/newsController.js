@@ -109,24 +109,7 @@ const getPopularNews = async (req, res) => {
   }
 };
 
-// Fonction pour récupérer les actualités récentes (publiées aujourd'hui)
-const getRecentNews = async (req, res) => {
-  try {
-    const today = new Date().toISOString().split("T")[0]; // 🔹 Format YYYY-MM-DD
-
-    const [newsApiArticles, nyTimesArticles, gNewsArticles] = await Promise.all([
-      getNewsFromNewsAPI({ keyword: "latest", startDate: today, endDate: today }),
-      getNewsFromNYTimes({ keyword: "latest", startDate: today, endDate: today }),
-      getNewsFromGNews({ keyword: "latest", startDate: today, endDate: today }),
-    ]);
-
-    let allArticles = [...newsApiArticles, ...nyTimesArticles, ...gNewsArticles];
-
-    res.json({ articles: allArticles.slice(0, 10) }); // Retourner les 10 articles les plus récents
-  } catch (error) {
-    res.status(500).json({ message: "Erreur lors de la récupération des actualités récentes", error });
-  }
-};
 
 
-module.exports = { searchNews, getPopularNews, getRecentNews };
+
+module.exports = { searchNews, getPopularNews };

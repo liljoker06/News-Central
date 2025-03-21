@@ -6,11 +6,11 @@ const API_URL = import.meta.env.VITE_API_URL;
 interface APIArticle {
   title?: string;
   author?: string;
-  source?: { name?: string }; // Certaines APIs mettent l'auteur sous `source.name`
+  source?: { name?: string };
   urlToImage?: string;
   image?: string;
   publishedAt?: string;
-  url: string;
+  url?: string;
 }
 
 // Interface pour les articles après transformation
@@ -23,15 +23,34 @@ export interface Article {
   url: string;
 }
 
-// Fonction pour transformer les articles API en `Article`
-const transformArticle = (article: APIArticle): Article => ({
-  title: article.title || "Titre inconnu",
-  author: article.author || article.source?.name || "Auteur inconnu",
-  views: Math.floor(Math.random() * 5000), // Générer un nombre aléatoire de vues
-  imageUrl: article.urlToImage || article.image || "https://source.unsplash.com/200x200/?news",
-  date: article.publishedAt || new Date().toISOString(),
-  url: article.url || "#",
-});
+// Fonction pour transformer et filtrer les articles API en `Article`
+const transformArticle = (article: APIArticle): Article | null => {
+  const title = article.title?.trim() || "";
+  const imageUrl = article.urlToImage || article.image || "";
+  const date = article.publishedAt || "";
+  const url = article.url || "";
+
+  // 🔹 Vérifier si l'article a un **titre valide**
+  if (!title || title === "Titre inconnu" || title.length < 5) {
+    console.warn("⚠️ Article ignoré : titre invalide", article);
+    return null;
+  }
+
+  // 🔹 Vérifier si l'article a une **image, une date et une URL**
+  if (!imageUrl || !date || !url) {
+    console.warn("⚠️ Article ignoré : données incomplètes", { title, imageUrl, date, url });
+    return null;
+  }
+
+  return {
+    title,
+    author: article.author || article.source?.name || "Auteur inconnu",
+    views: Math.floor(Math.random() * 5000),
+    imageUrl,
+    date: new Date(date).toLocaleDateString(),
+    url,
+  };
+};
 
 // 🔹 Récupérer les articles populaires
 export const fetchPopularNews = async (): Promise<Article[]> => {
@@ -43,26 +62,12 @@ export const fetchPopularNews = async (): Promise<Article[]> => {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    return response.data.articles.map(transformArticle);
+    return response.data.articles.map(transformArticle).filter(Boolean) as Article[];
   } catch (error) {
     console.error("Erreur lors de la récupération des articles populaires :", error);
     return [];
   }
 };
 
-// 🔹 Récupérer les articles récents
-export const fetchRecentNews = async (): Promise<Article[]> => {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) throw new Error("Utilisateur non connecté");
 
-    const response = await axios.get<{ articles: APIArticle[] }>(`${API_URL}/news/recent`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    return response.data.articles.map(transformArticle);
-  } catch (error) {
-    console.error("Erreur lors de la récupération des articles récents :", error);
-    return [];
-  }
-};
+  
