@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Newspaper } from 'lucide-react';
 import { NewsFilters } from '../components/NewsFilters';
 import { ArticleCard } from '../components/ArticleCard';
 import { useAuthStore } from '../store/authStore';
+import { filterArticles } from "../utils/filtre";
+
 import type { Article, SearchFilters } from '../types';
 
 export function NewsPage() {
-  const { user, logout } = useAuthStore();
+
   const [filters, setFilters] = useState<SearchFilters>({
     keyword: '',
     category: 'all',
@@ -33,45 +35,42 @@ export function NewsPage() {
     },
   ];
 
+  const [filteredArticles, setFilteredArticles] = useState<Article[]>([]);
+
+    useEffect(() => {
+      const filtered = filterArticles(articles, filters); 
+      setFilteredArticles(filtered);
+    }, [filters]);
+  
   const handleArticleClick = (article: Article) => {
     window.open(article.url, '_blank');
   };
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <header className="bg-white shadow-md">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Newspaper className="w-8 h-8 text-blue-600" />
-              <h1 className="text-2xl font-bold text-gray-800">News Central</h1>
-            </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-600">{user?.email}</span>
-              <button
-                onClick={logout}
-                className="px-4 py-2 text-sm text-red-600 hover:text-red-800 transition-colors"
-              >
-                Logout
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
       <main className="container mx-auto px-4 py-8">
         <NewsFilters filters={filters} onFilterChange={setFilters} />
         
         <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {articles.map((article) => (
-            <ArticleCard
-              key={article.id}
-              article={article}
-              onArticleClick={handleArticleClick}
-            />
-          ))}
+          {filteredArticles.length === 0 ? (
+            <p className="text-gray-500">
+              Aucun article trouvé avec les critères sélectionnés.
+            </p>
+          ) : (
+            <div className="grid grid-cols-1">
+              {filteredArticles.map((article) => (
+                <ArticleCard
+                  key={article.url}
+                  article={article}
+                  onArticleClick={handleArticleClick}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </main>
     </div>
   );
 }
+
+
