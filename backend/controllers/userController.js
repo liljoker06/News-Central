@@ -42,22 +42,42 @@ const registerUser = async (req, res) => {
 const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
+  console.log('donnée reçue', req.body);
+
+  if (!email || !password) {
+    return res.status(400).json({ message: 'Tous les champs sont requis' });
+  }
+
   try {
 
     const user = await User.findOne({ email });
+    console.log('user trouvé ', user);
     if (!user) {
       return res.status(400).json({ message: 'Utilisateur non trouvé' });
     }
 
+
     const isMatch = await bcrypt.compare(password, user.password);
+
+    console.log('isMatch', isMatch);
     if (!isMatch) {
       return res.status(400).json({ message: 'Mot de passe incorrect' });
     }
 
-
+    console.log('process.env.JWT_SECRET', process.env.JWT_SECRET);
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
 
-    res.status(200).json({ message: 'Connexion réussie', token });
+    console.log('token', token);
+
+    res.status(200).json({ 
+      message: 'Connexion réussie', 
+      token , 
+      user: {
+      id: user._id,
+      username: user.username, 
+      email: user.email
+    }
+  });
   } catch (error) {
     console.error('Erreur lors de la connexion de l\'utilisateur:', error);
     res.status(500).json({ message: 'Erreur serveur lors de la connexion' });
