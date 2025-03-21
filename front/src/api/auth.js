@@ -1,8 +1,9 @@
+// src/api/auth.js
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL;  
+// API URL from environment variable
+const API_URL = import.meta.env.VITE_API_URL;
 
-// Fonction pour enregistrer un utilisateur
 export const register = async (username, email, password) => {
   try {
     const response = await axios.post(`${API_URL}/users/register`, {
@@ -11,7 +12,7 @@ export const register = async (username, email, password) => {
       password,
     });
     
-    return response.data; 
+    return response.data;  // Doit correspondre au type AuthResponse
   } catch (error) {
     if (error.response) {
       throw new Error(error.response.data.message || 'Erreur d\'inscription');
@@ -29,7 +30,7 @@ export const login = async (email, password) => {
     });
 
     localStorage.setItem('token', response.data.token);
-    return response.data; 
+    return response.data;  // Doit correspondre au type AuthResponse
   } catch (error) {
     if (error.response) {
       throw new Error(error.response.data.message || 'Erreur de connexion');
@@ -40,10 +41,5 @@ export const login = async (email, password) => {
 };
 
 export const isAuthenticated = () => {
-  return !!localStorage.getItem('token'); 
-};
-
-// Fonction pour se déconnecter
-export const logout = () => {
-  localStorage.removeItem('token');
+  return !!localStorage.getItem('token');
 };
