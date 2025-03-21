@@ -2,7 +2,7 @@ import { Newspaper } from "lucide-react";
 import { useAuthStore } from "../store/authStore";
 import { useNavigate } from "react-router-dom";
 
-export function Header() {
+export function Navbar() {
   const { user, logout } = useAuthStore();
   const navigate = useNavigate();
 

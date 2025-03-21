@@ -3,7 +3,7 @@ import { LoginPage } from "./pages/LoginPage";
 import { NewsPage } from "./pages/NewsPage";
 import { HistoryPage } from "./pages/HistoryPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
-import { Header } from "./components/Header";
+import { Navbar } from "./components/Navbar";
 import PopularityPage from "./pages/PopularityPage";
 import HomepagePage from "./pages/HomePage";
 import { useAuthStore } from "./store/authStore"; // Importer le store Zustand
@@ -14,7 +14,7 @@ function App() {
   return (
     <BrowserRouter>
       {/* Affiche la Navbar seulement si l'utilisateur est connecté */}
-      {isAuthenticated && <Header />}
+      {isAuthenticated && <Navbar />}
 
       <Routes>
         <Route path="/login" element={<LoginPage />} />
