@@ -1,88 +1,169 @@
 import React, { useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { Newspaper, Mail, Lock } from 'lucide-react';
-import { useAuthStore } from '../store/authStore';
+import { useNavigate } from 'react-router-dom';
+import { Mail, Lock, User } from 'lucide-react'; // Icônes pour email, mot de passe et nom d'utilisateur
+import { useAuthStore } from '../store/authStore'; // Store pour l'authentification
 
 export function LoginPage() {
+  // États pour gérer les champs du formulaire
+  const [username, setUsername] = useState(''); // Champ pour le nom d'utilisateur
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState(''); // Champ de confirmation du mot de passe
   const [error, setError] = useState('');
+  const [isLogin, setIsLogin] = useState(true); // Toggle entre Connexion et Inscription
   const navigate = useNavigate();
-  const location = useLocation();
+  
   const login = useAuthStore((state) => state.login);
+  const signup = useAuthStore((state) => state.signup); // Fonction d'inscription dans le store
 
-  const from = location.state?.from?.pathname || '/';
-
+  // Gestion de la soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
+    // Si c'est un formulaire d'inscription, on vérifie que les mots de passe correspondent
+    if (!isLogin && password !== confirmPassword) {
+      setError('Les mots de passe ne correspondent pas');
+      return;
+    }
+
+    // Si c'est un formulaire d'inscription, on vérifie que le nom d'utilisateur est rempli
+    if (!isLogin && username.trim() === '') {
+      setError('Veuillez entrer un nom d\'utilisateur');
+      return;
+    }
+
     try {
-      await login(email, password);
-      navigate(from, { replace: true });
+      if (isLogin) {
+        // Si c'est une connexion
+        await login(email, password);
+      } else {
+        // Si c'est une inscription
+        await signup(username, email, password);
+      }
+      navigate('/'); // Redirection après une connexion ou inscription réussie
     } catch (err) {
-      setError('Invalid credentials');
+      setError('Identifiants incorrects ou une erreur s\'est produite');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <div className="flex flex-col items-center mb-8">
-          <Newspaper className="w-12 h-12 text-blue-600 mb-2" />
-          <h1 className="text-2xl font-bold text-gray-800">News Central</h1>
-          <p className="text-gray-600">Sign in to access your news feed</p>
+    <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
+      <div className="bg-white p-10 rounded-xl shadow-xl w-full max-w-md space-y-6">
+        {/* Header avec Logo */}
+        <div className="flex flex-col items-center mb-6">
+          <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-600 rounded-full flex items-center justify-center mb-4">
+            <Mail className="text-white w-8 h-8" />
+          </div>
+          <h1 className="text-3xl font-extrabold text-gray-800">{isLogin ? 'Welcome Back!' : 'Create an Account'}</h1>
+          <p className="text-gray-500 text-sm">
+            {isLogin ? 'Sign in to access your latest news feed' : 'Fill in the details to create a new account'}
+          </p>
         </div>
 
+        {/* Affichage du message d'erreur */}
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded-md">
             {error}
           </div>
         )}
 
+        {/* Formulaire de Connexion / Inscription */}
         <form onSubmit={handleSubmit} className="space-y-4">
+   {/* Champ pour le nom d'utilisateur uniquement en mode inscription */}
+   {!isLogin && (
+            <div>
+              <label className="block text-gray-700 text-sm font-medium mb-1 flex items-center gap-2">
+                <User className="w-4 h-4 text-blue-500" />
+                Username
+              </label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Choose a username"
+                required
+              />
+            </div>
+          )}
+
+          {/* Champ email */}
           <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                Email
-              </div>
+            <label className="block text-gray-700 text-sm font-medium mb-1 flex items-center gap-2">
+              <Mail className="w-4 h-4 text-blue-500" />
+              Email
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your email"
               required
             />
           </div>
 
+          {/* Champ mot de passe */}
           <div>
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              <div className="flex items-center gap-2">
-                <Lock className="w-4 h-4" />
-                Password
-              </div>
+            <label className="block text-gray-700 text-sm font-medium mb-1 flex items-center gap-2">
+              <Lock className="w-4 h-4 text-blue-500" />
+              Password
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter your password"
               required
             />
           </div>
 
+          {/* Champ pour confirmer le mot de passe uniquement en mode inscription */}
+          {!isLogin && (
+            <div>
+              <label className="block text-gray-700 text-sm font-medium mb-1 flex items-center gap-2">
+                <Lock className="w-4 h-4 text-blue-500" />
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="w-full p-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Confirm your password"
+                required
+              />
+            </div>
+          )}
+
+       
+
+          {/* Bouton de soumission du formulaire */}
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition-colors"
+            className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg hover:bg-gradient-to-l transition duration-300"
           >
-            Sign In
+            {isLogin ? 'Sign In' : 'Sign Up'}
           </button>
         </form>
+
+        {/* Lien pour basculer entre Connexion et Inscription */}
+        <div className="text-center mt-4 text-sm text-gray-500">
+          <p>
+            {isLogin ? "Don't have an account?" : 'Already have an account?'}
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-blue-600 hover:underline ml-1"
+            >
+              {isLogin ? 'Sign Up' : 'Sign In'}
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );
 }
+
+export default LoginPage;
