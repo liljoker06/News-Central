@@ -7,11 +7,11 @@ const articleHistorySchema = new mongoose.Schema({
     required: true,
   },
   articleId: {
-    type: String, // L'ID spécifique de l'article provenant de l'API
+    type: String, 
     required: true,
   },
   sourceApi: {
-    type: String, // Indique la source de l'API (newsapi, nytimes, gnews)
+    type: String, 
     required: true,
   },
   title: {
@@ -30,15 +30,11 @@ const articleHistorySchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  searchQuery: {
-    type: String,
-    required: true,
-  },
   viewedAt: {
     type: Date,
     default: Date.now,
   },
-  // Ajout d'une image pour l'article (si applicable)
+  
   imageUrl: {
     type: String,
     default: null,
