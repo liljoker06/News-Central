@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { fetchPopularNews, Article } from "../api/news";
 import { addArticleToHistory } from "../api/history";
 import { useAuthStore } from "../store/authStore";
+import { SeeMore } from "../components/SeeMore";
 
 function HomePage() {
   const [popularArticles, setPopularArticles] = useState<Article[]>([]);
@@ -87,7 +88,8 @@ function HomePage() {
                 </div>
               </a>
             ))}
-          </div>
+          </div>        
+          <SeeMore href="/news" />
         </>
       )}
     </div>

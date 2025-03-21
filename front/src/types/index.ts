@@ -15,8 +15,7 @@ export interface Article {
 export interface SearchFilters {
   keyword: string;
   category: string;
-  startDate: string;
-  endDate: string;
+  date: string;
   source: string;
   sortBy: 'popularity' | 'date';
 }
