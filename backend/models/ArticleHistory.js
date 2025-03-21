@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const articleHistorySchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', 
+    ref: 'User',
     required: true,
   },
   articleId: {
@@ -31,12 +31,17 @@ const articleHistorySchema = new mongoose.Schema({
     required: true,
   },
   searchQuery: {
-    type: String, // La requête de recherche qui a permis de trouver cet article
+    type: String,
     required: true,
   },
   viewedAt: {
     type: Date,
-    default: Date.now, // Date de la consultation de l'article
+    default: Date.now,
+  },
+  // Ajout d'une image pour l'article (si applicable)
+  imageUrl: {
+    type: String,
+    default: null,
   },
 });
 
