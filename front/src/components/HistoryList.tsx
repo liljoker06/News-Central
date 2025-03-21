@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import  { useState } from "react";
 import { MoreVertical, Clock, Trash } from "lucide-react";
 import { format } from "date-fns";
 import type { HistoryArticle } from "../types";
