@@ -1,16 +1,21 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { LoginPage } from './pages/LoginPage';
-import { NewsPage } from './pages/NewsPage';
-import { HistoryPage } from './pages/HistoryPage';
-import { ProtectedRoute } from './components/ProtectedRoute';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { LoginPage } from "./pages/LoginPage";
+import { NewsPage } from "./pages/NewsPage";
+import { HistoryPage } from "./pages/HistoryPage";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { Header } from "./components/Header";
+import PopularityPage from "./pages/PopularityPage";
+import HomepagePage from "./pages/HomePage";
+import { useAuthStore } from "./store/authStore"; // Importer le store Zustand
 
-import { Header } from "./components/Header"
-import PopularityPage from './pages/PopularityPage';
-import HomepagePage from './pages/HomePage';
 function App() {
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
   return (
     <BrowserRouter>
-      <Header />
+      {/* Affiche la Navbar seulement si l'utilisateur est connecté */}
+      {isAuthenticated && <Header />}
+
       <Routes>
         <Route path="/login" element={<LoginPage />} />
 
@@ -18,8 +23,9 @@ function App() {
         <Route
           path="/"
           element={
-
+            <ProtectedRoute>
               <NewsPage />
+            </ProtectedRoute>
           }
         />
         <Route
@@ -29,23 +35,26 @@ function App() {
               <PopularityPage />
             </ProtectedRoute>
           }
-
         />
-         <Route
-          path="/Home"
+        <Route
+          path="/home"
           element={
             <ProtectedRoute>
               <HomepagePage />
             </ProtectedRoute>
           }
-
         />
-        
-        
+        <Route
+          path="/history"
+          element={
+            <ProtectedRoute>
+              <HistoryPage />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Redirection pour les routes inconnues */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-        <Route path="history" element={<HistoryPage />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );
