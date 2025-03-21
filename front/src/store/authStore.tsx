@@ -2,8 +2,14 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { login as apiLogin, AuthResponse } from "../api/auth";
 
+interface User {
+  id: string;
+  username: string;  // 🔹 Ajout de `username`
+  email: string;
+}
+
 interface AuthState {
-  token: string | null;
+  user: User | null;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => void;
@@ -13,17 +19,18 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
-      token: null,
+      user: null,
       isAuthenticated: false,
 
-      // Vérifie si un token existe au démarrage
       checkAuth: () => {
-        const storedToken = localStorage.getItem("token");
-        console.log("🔄 Vérification de l'authentification :", storedToken);
-        if (storedToken) {
-          set({ token: storedToken, isAuthenticated: true });
-        } else {
-          set({ token: null, isAuthenticated: false });
+        const token = localStorage.getItem("token");
+        const userData = localStorage.getItem("user");
+
+        if (token && userData) {
+          set({
+            user: JSON.parse(userData),
+            isAuthenticated: true,
+          });
         }
       },
 
@@ -31,13 +38,14 @@ export const useAuthStore = create<AuthState>()(
         try {
           const data: AuthResponse = await apiLogin(email, password);
           localStorage.setItem("token", data.token);
-
-          console.log("✅ Utilisateur connecté, isAuthenticated → true");
+          localStorage.setItem("user", JSON.stringify(data.user));  // 🔹 Stocker `username` et `email`
 
           set({
-            token: data.token,
+            user: data.user,
             isAuthenticated: true,
           });
+
+          console.log("✅ Connexion réussie :", data.user);
         } catch (error) {
           if (error instanceof Error) {
             throw new Error(error.message || "Erreur de connexion");
@@ -49,10 +57,11 @@ export const useAuthStore = create<AuthState>()(
 
       logout: () => {
         localStorage.removeItem("token");
+        localStorage.removeItem("user");
 
-        console.log("🚪 Utilisateur déconnecté, isAuthenticated → false");
+        set({ user: null, isAuthenticated: false });
 
-        set({ token: null, isAuthenticated: false });
+        console.log("🚪 Déconnexion réussie");
       },
     }),
     {

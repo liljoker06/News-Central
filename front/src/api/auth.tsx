@@ -8,6 +8,7 @@ export interface AuthResponse {
   token: string;
   user: {
     id: string;
+    username: string;
     email: string;
   };
 }
@@ -41,6 +42,8 @@ export const login = async (email: string, password: string): Promise<AuthRespon
     const response = await axios.post<AuthResponse>(`${API_URL}/users/login`, {
       email,
       password,
+    }, {
+      headers: { "Content-Type": "application/json" }
     });
 
     console.log("Réponse reçue :", response.data);
@@ -49,7 +52,8 @@ export const login = async (email: string, password: string): Promise<AuthRespon
     return response.data;
   } catch (error) {
     if (error instanceof AxiosError && error.response) {
-      throw new Error((error.response.data as APIError).message || "Erreur de connexion");
+      console.error("Erreur Axios :", error.response.data);
+      throw new Error(error.response.data.message || "Erreur de connexion");
     }
     throw new Error("Erreur lors de la connexion");
   }

@@ -33,9 +33,11 @@ const userRoutes = require('./routes/userRoutes');
 const articleHistoryRoutes = require('./routes/articleHistoryRoutes');
 
 
+
 app.use('/api/news', newsRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/history', articleHistoryRoutes);
+
 
 app.listen(PORT, () => {
   console.log(`Serveur lancé sur le port ${PORT}`);

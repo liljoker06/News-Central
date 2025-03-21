@@ -81,4 +81,52 @@ const searchNews = async (req, res) => {
   }
 };
 
-module.exports = { searchNews };
+
+
+
+// Fonction pour récupérer les actualités populaires (celles avec le plus de vues)
+const getPopularNews = async (req, res) => {
+  try {
+    const [newsApiArticles, nyTimesArticles, gNewsArticles] = await Promise.all([
+      getNewsFromNewsAPI({ keyword: "trending" }),
+      getNewsFromNYTimes({ keyword: "trending" }),
+      getNewsFromGNews({ keyword: "trending" }),
+    ]);
+
+    let allArticles = [...newsApiArticles, ...nyTimesArticles, ...gNewsArticles];
+
+    // Trier par nombre de vues décroissant (on génère des vues aléatoires pour la démo)
+    allArticles = allArticles
+      .map((article) => ({
+        ...article,
+        views: Math.floor(Math.random() * 5000), // 🔹 Générer un nombre de vues aléatoire
+      }))
+      .sort((a, b) => b.views - a.views); // Trier du plus vu au moins vu
+
+    res.json({ articles: allArticles.slice(0, 10) }); // Retourner les 10 plus populaires
+  } catch (error) {
+    res.status(500).json({ message: "Erreur lors de la récupération des actualités populaires", error });
+  }
+};
+
+// Fonction pour récupérer les actualités récentes (publiées aujourd'hui)
+const getRecentNews = async (req, res) => {
+  try {
+    const today = new Date().toISOString().split("T")[0]; // 🔹 Format YYYY-MM-DD
+
+    const [newsApiArticles, nyTimesArticles, gNewsArticles] = await Promise.all([
+      getNewsFromNewsAPI({ keyword: "latest", startDate: today, endDate: today }),
+      getNewsFromNYTimes({ keyword: "latest", startDate: today, endDate: today }),
+      getNewsFromGNews({ keyword: "latest", startDate: today, endDate: today }),
+    ]);
+
+    let allArticles = [...newsApiArticles, ...nyTimesArticles, ...gNewsArticles];
+
+    res.json({ articles: allArticles.slice(0, 10) }); // Retourner les 10 articles les plus récents
+  } catch (error) {
+    res.status(500).json({ message: "Erreur lors de la récupération des actualités récentes", error });
+  }
+};
+
+
+module.exports = { searchNews, getPopularNews, getRecentNews };

@@ -6,7 +6,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Navbar } from "./components/Navbar";
 import PopularityPage from "./pages/PopularityPage";
 import HomepagePage from "./pages/HomePage";
-import { useAuthStore } from "./store/authStore"; // Importer le store Zustand
+import { useAuthStore } from "./store/authStore"; 
 
 function App() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -24,6 +24,14 @@ function App() {
           path="/"
           element={
             <ProtectedRoute>
+              <HomepagePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/news"
+          element={
+            <ProtectedRoute>
               <NewsPage />
             </ProtectedRoute>
           }
@@ -33,14 +41,6 @@ function App() {
           element={
             <ProtectedRoute>
               <PopularityPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/home"
-          element={
-            <ProtectedRoute>
-              <HomepagePage />
             </ProtectedRoute>
           }
         />
