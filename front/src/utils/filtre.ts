@@ -7,15 +7,17 @@ export function filterArticles(
   let filtered = articles;
 
   if (filters.keyword) {
-    filtered = filtered.filter(
-      (article) =>
-        article.title.toLowerCase().includes(filters.keyword.toLowerCase()) ||
-        article.description
-          .toLowerCase()
-          .includes(filters.keyword.toLowerCase())
-    );
+    console.log("Filtre par mot-clé:", filters.keyword);
+    filtered = filtered.filter((article) => {
+      console.log("Article actuel:", article);
+      const title = article.title ? article.title.toLowerCase() : "";
+      const description = article.description ? article.description.toLowerCase() : "";
+      return (
+        title.includes(filters.keyword.toLowerCase()) ||
+        description.includes(filters.keyword.toLowerCase())
+      );
+    });
   }
-
   if (filters.category !== "all") {
     filtered = filtered.filter(
       (article) => article.category === filters.category

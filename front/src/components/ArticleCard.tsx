@@ -1,7 +1,7 @@
-import React from 'react';
-import { Calendar, Globe, Tag } from 'lucide-react';
-import { format } from 'date-fns';
-import type { Article } from '../types';
+import React from "react";
+import { Calendar, Globe, View } from "lucide-react";
+import { format } from "date-fns";
+import type { Article } from "../types";
 
 interface ArticleCardProps {
   article: Article;
@@ -9,8 +9,9 @@ interface ArticleCardProps {
 }
 
 export function ArticleCard({ article, onArticleClick }: ArticleCardProps) {
+  console.log("ArticleCard", article);
   return (
-    <article 
+    <article
       onClick={() => onArticleClick(article)}
       className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
     >
@@ -25,21 +26,19 @@ export function ArticleCard({ article, onArticleClick }: ArticleCardProps) {
         <h3 className="text-xl font-semibold mb-2 line-clamp-2">
           {article.title}
         </h3>
-        <p className="text-gray-600 mb-4 line-clamp-3">
-          {article.description}
-        </p>
+        <p className="text-gray-600 mb-4 line-clamp-3">{article.description}</p>
         <div className="flex flex-wrap gap-3 text-sm text-gray-500">
           <div className="flex items-center">
             <Globe className="w-4 h-4 mr-1" />
-            {article.source.name}
+            {article.author}
           </div>
           <div className="flex items-center">
             <Calendar className="w-4 h-4 mr-1" />
-            {format(new Date(article.publishedAt), 'MMM d, yyyy')}
+            {article.date}
           </div>
           <div className="flex items-center">
-            <Tag className="w-4 h-4 mr-1" />
-            {article.category}
+            <View className="w-4 h-4 mr-1" />
+            {article.views}
           </div>
         </div>
       </div>

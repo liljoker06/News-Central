@@ -6,7 +6,7 @@ interface NewsFiltersProps {
   filters: SearchFilters;
   onFilterChange: (filters: SearchFilters) => void;
 }
-
+// Ne marche paaaaaas
 const categories = [
   'all',
   'business',
@@ -19,6 +19,7 @@ const categories = [
 ];
 
 export function NewsFilters({ filters, onFilterChange }: NewsFiltersProps) {
+  console.log("NewsFilters", filters);
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     onFilterChange({ ...filters, [name]: value });
@@ -50,6 +51,7 @@ export function NewsFilters({ filters, onFilterChange }: NewsFiltersProps) {
             onChange={handleChange}
             className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
+            {/* Ne marche paaaaas */}
             {categories.map((category) => (
               <option key={category} value={category}>
                 {category.charAt(0).toUpperCase() + category.slice(1)}
@@ -66,7 +68,7 @@ export function NewsFilters({ filters, onFilterChange }: NewsFiltersProps) {
           <input
             type="date"
             name="startDate"
-            value={filters.startDate}
+            value={filters.date}
             onChange={handleChange}
             className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
@@ -80,7 +82,7 @@ export function NewsFilters({ filters, onFilterChange }: NewsFiltersProps) {
           <input
             type="date"
             name="endDate"
-            value={filters.endDate}
+            value={filters.date}
             onChange={handleChange}
             className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           />

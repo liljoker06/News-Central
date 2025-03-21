@@ -14,38 +14,45 @@ export function LoginPage() {
   const navigate = useNavigate();
   
   const login = useAuthStore((state) => state.login);
-  const signup = useAuthStore((state) => state.signup); // Fonction d'inscription dans le store
+  const signup = useAuthStore((state) => state.signup); 
 
-  // Gestion de la soumission du formulaire
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+// Gestion de la soumission du formulaire
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  console.log("Bouton cliqué !");
+  setError('');
 
-    // Si c'est un formulaire d'inscription, on vérifie que les mots de passe correspondent
-    if (!isLogin && password !== confirmPassword) {
-      setError('Les mots de passe ne correspondent pas');
-      return;
+  // Vérification des mots de passe et du nom d'utilisateur
+  if (!isLogin && password !== confirmPassword) {
+    setError('Les mots de passe ne correspondent pas');
+    return;
+  }
+
+  if (!isLogin && username.trim() === '') {
+    setError('Veuillez entrer un nom d\'utilisateur');
+    return;
+  }
+
+  try {
+    if (isLogin) {
+      // Connexion normale
+      await login(email, password);
+    } else {
+      // Inscription puis connexion automatique
+      const newUser = await signup(username, email, password);
+      console.log("Inscription réussie :", newUser);
+
+      // Connexion automatique après inscription
+      await login(email, password);
     }
 
-    // Si c'est un formulaire d'inscription, on vérifie que le nom d'utilisateur est rempli
-    if (!isLogin && username.trim() === '') {
-      setError('Veuillez entrer un nom d\'utilisateur');
-      return;
-    }
+    navigate('/'); // Redirection après connexion réussie
+  } catch (err) {
+    console.error("Erreur :", err);
+    setError('Identifiants incorrects ou une erreur s\'est produite');
+  }
+};
 
-    try {
-      if (isLogin) {
-        // Si c'est une connexion
-        await login(email, password);
-      } else {
-        // Si c'est une inscription
-        await signup(username, email, password);
-      }
-      navigate('/'); // Redirection après une connexion ou inscription réussie
-    } catch (err) {
-      setError('Identifiants incorrects ou une erreur s\'est produite');
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
