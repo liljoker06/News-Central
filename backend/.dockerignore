@@ -1,0 +1,42 @@
+# Node modules
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git
+.gitignore
+
+# Docker files (si tu rebuildes)
+docker-compose.yml
+Dockerfile
+
+# VSCode settings
+.vscode
+
+# Tests & coverage
+coverage
+__tests__
+jest.config.js
+*.test.js
+*.spec.js
+
+# Misc
+.idea
+*.swp
+*.swo
+*.bak
+*.tmp
