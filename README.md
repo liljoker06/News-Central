@@ -52,10 +52,17 @@ JWT_SECRET=ta_cle_secrete
 
 ---
 
-### 4. Lancer le projet avec Docker 🐋
+### 4. Lancer le projet avec Docker 🛥️
+
+Les images Docker sont disponibles sur Docker Hub :
+
+- 🔗 Backend : [https://hub.docker.com/r/liljoker/backend](https://hub.docker.com/r/liljoker/backend)
+- 🔗 Frontend : [https://hub.docker.com/r/liljoker/frontend](https://hub.docker.com/r/liljoker/frontend)
+
+Démarrez l'application avec :
 
 ```bash
-docker compose up --build
+docker compose up
 ```
 
 ### 5. Accéder à l’application
@@ -70,11 +77,11 @@ docker compose up --build
 
 ## ⚙️ Commandes utiles
 
-| Commande                      | Description                           |
-|------------------------------|---------------------------------------|
-| `docker compose up --build`  | Build & démarre les containers        |
-| `docker compose down`        | Stoppe et supprime les containers     |
-| `docker compose logs -f`     | Affiche les logs en temps réel        |
+| Commande                    | Description                           |
+|----------------------------|---------------------------------------|
+| `docker compose up`        | Démarre les containers                |
+| `docker compose down`      | Stoppe et supprime les containers     |
+| `docker compose logs -f`   | Affiche les logs en temps réel        |
 
 ---
 
@@ -93,6 +100,7 @@ docker compose up --build
 │   ├── src
 │   ├── public
 │   └── package.json
+├── .dockerignore
 ├── docker-compose.yml
 └── README.md
 ```
@@ -101,19 +109,32 @@ docker compose up --build
 
 ## 🧑‍💻 Développement
 
-- Le projet utilise le **hot reload** :
-  - Frontend : modifications visibles instantanément sur le navigateur.
-  - Backend : possibilité d’ajouter Nodemon pour rechargement automatique (optionnel).
-
-- Le backend et le frontend communiquent via Docker Network.
-
+- Le backend et le frontend communiquent via le réseau Docker interne.
 - MongoDB est persistant grâce au volume Docker (`mongo-data`).
 
 ---
 
-## 📝 Note
+## 📝 Questions de réflexion
 
-> Ce projet est conçu principalement pour apprendre et avoir une base solide avec **Vite**, **Node.js**, et **Docker**.
+> **1. Quelle est la différence entre `build:` et `image:` dans Docker Compose ?**  
+> `build:` construit l'image localement à partir d'un Dockerfile.  
+> `image:` utilise une image déjà prête et disponible sur un registre comme Docker Hub.  
+> Dans ce projet, nous utilisons `image:` pour déployer les images construites et poussées sur Docker Hub.
+
+> **2. Quel est l’intérêt d’utiliser un fichier `.env` dans un projet Docker ?**  
+> Il permet de centraliser et de sécuriser les variables d'environnement sans les hardcoder dans les fichiers de configuration.
+
+> **3. Comment les volumes Docker aident-ils à gérer la persistance des données ?**  
+> Les volumes permettent de conserver les données même si le container est supprimé ou recréé.
+
+> **4. Si vous deviez ajouter un quatrième service (ex : un reverse proxy NGINX), comment l’intégreriez-vous ?**  
+> Il faudrait ajouter un nouveau service dans le `docker-compose.yml` avec l'image `nginx`, le configurer pour rediriger les requêtes vers le frontend et le backend, et s'assurer que tous les services partagent le même réseau Docker.
+
+---
+
+## 📝 Note finale
+
+> Ce projet est conçu principalement pour apprendre et avoir une base solide avec **Vite**, **Node.js**, et **Docker Compose**.
 >
 > ✅ Simple, efficace, et prêt à étendre si besoin.
 
@@ -128,7 +149,6 @@ Ce projet est sous licence **MIT**.
 ## 🌟 Remerciements
 
 Merci 🚀
-
 
 ---
 
