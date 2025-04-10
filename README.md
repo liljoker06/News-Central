@@ -1,10 +1,12 @@
-# 📰 News Central — Fullstack Dockerized App
+# 🔖 News Central — Fullstack Dockerized App
 
-Bienvenue sur **News Central** !
+Bienvenue sur **News Central** 🚀
 
-Une application fullstack construite avec **React (Vite)** pour le frontend, **Node.js / Express** pour le backend, et **MongoDB** pour la base de données.
-
-Le tout est orchestré avec **Docker Compose** pour un environnement de développement parfaitement isolé.
+Une application fullstack complète construite avec :
+- **React (Vite)** pour le frontend
+- **Node.js / Express** pour le backend
+- **MongoDB** pour la base de données
+- Le tout orchestré par **Docker Compose** avec un reverse proxy **NGINX** pour un environnement de dev & prod propre et isolé.
 
 ---
 
@@ -13,6 +15,7 @@ Le tout est orchestré avec **Docker Compose** pour un environnement de dévelop
 - **Frontend** : React + Vite
 - **Backend** : Node.js + Express
 - **Base de données** : MongoDB
+- **Reverse Proxy** : NGINX
 - **Conteneurisation** : Docker & Docker Compose
 
 ---
@@ -35,74 +38,63 @@ cd news-central
 
 ### 3. Configurer les variables d’environnement
 
-Créez un fichier `.env` à la racine du projet avec le contenu suivant (modèle) :
+Créez les fichiers `.env.front` et `.env.backend` à la racine du projet.
+
+#### `.env.front`
 
 ```env
-# MongoDB URI
+NODE_ENV=development
+VITE_API_URL=/api
+```
+
+#### `.env.backend`
+
+```env
 MONGODB_URI=mongodb://mongo:27017/news-central
-
-# Port du serveur
 PORT=5000
-
-# API Keys (à récupérer via les liens ci-dessous)
 NEWSAPI_KEY=your_newsapi_key
 NYTIMES_API_KEY=your_nytimes_api_key
 GNEWS_API_KEY=your_gnews_api_key
-
-# JWT secret
 JWT_SECRET=your_jwt_secret
-
-# Frontend API URL
-# En local
-# VITE_API_URL=http://localhost:5000/api
-
-# En Docker Compose
-VITE_API_URL=http://backend:5000/api
 ```
 
-> 📘 **Astuce :** Ne pas versionner les fichiers `.env`. Ils sont déjà dans `.gitignore`.
+> 📘 **Astuce :** Ne versionnez pas ces fichiers `.env`. Utilisez des fichiers `.env.example` pour partager le projet.
 
-> 🔗 **Liens pour générer vos clés API :**
+> 🔗 **Liens pour les clés API :**
 > - [NewsAPI](https://newsapi.org/)
 > - [New York Times API](https://developer.nytimes.com/get-started)
 > - [GNews](https://gnews.io/)
 
----
+### 4. Lancer le projet avec Docker 🚢
 
-### 4. Lancer le projet avec Docker 🛥️
-
-Les images Docker sont disponibles sur Docker Hub :
-
-- 🔗 Backend : [https://hub.docker.com/r/liljoker/backend](https://hub.docker.com/r/liljoker/backend)
-- 🔗 Frontend : [https://hub.docker.com/r/liljoker/frontend](https://hub.docker.com/r/liljoker/frontend)
-
-Démarrez l'application avec :
+Construisez et démarrez tous les services avec :
 
 ```bash
-docker compose up
+docker-compose up -d --build
 ```
 
 ### 5. Accéder à l’application
 
-| Service            | URL                              |
-|-------------------|-----------------------------------|
-| Frontend (Vite)   | http://localhost:5173             |
-| Backend (Express) | http://localhost:5000             |
-| MongoDB           | mongodb://localhost:27017 *(via client MongoDB)* |
+| Service             | URL                           |
+|--------------------|-------------------------------|
+| Frontend (Vite)    | http://localhost:8080          |
+| Backend (API via NGINX) | http://localhost:8080/api/   |
+| MongoDB            | mongodb://localhost:27017 *(via client MongoDB)* |
 
 ---
 
 ## ⚙️ Commandes utiles
 
-| Commande                    | Description                           |
-|----------------------------|---------------------------------------|
-| `docker compose up`        | Démarre les containers                |
-| `docker compose down`      | Stoppe et supprime les containers     |
-| `docker compose logs -f`   | Affiche les logs en temps réel        |
+| Commande                      | Description                           |
+|------------------------------|---------------------------------------|
+| `docker-compose up -d --build` | Build et démarre les containers      |
+| `docker-compose down`          | Stoppe et supprime les containers    |
+| `docker-compose logs -f backend` | Affiche les logs du backend         |
+| `docker-compose logs -f nginx`   | Affiche les logs du reverse proxy   |
 
 ---
 
-## 🧰 Structure du projet
+## 🛠️ Structure du projet
 
 ```
 .
@@ -117,8 +109,10 @@ docker compose up
 │   ├── src
 │   ├── public
 │   └── package.json
+├── nginx.conf
 ├── .dockerignore
-├── .env
+├── .env.front
+├── .env.backend
 ├── docker-compose.yml
 └── README.md
 ```
@@ -127,38 +121,30 @@ docker compose up
 
 ## 🧑‍💻 Développement
 
-- Le backend et le frontend communiquent via le réseau Docker interne.
+- Le backend et le frontend communiquent via le proxy NGINX.
 - MongoDB est persistant grâce au volume Docker (`mongo-data`).
+- Les services utilisent un réseau interne Docker (`app-network`).
 
 ---
 
-## 📝 Questions de réflexion
+## 📚 Questions Fréquentes
 
-> **1. Quelle est la différence entre `build:` et `image:` dans Docker Compose ?**  
-> `build:` construit l'image localement à partir d'un Dockerfile.  
-> `image:` utilise une image déjà prête et disponible sur un registre comme Docker Hub.  
-> Dans ce projet, nous utilisons `image:` pour déployer les images construites et poussées sur Docker Hub.
+> **1. Pourquoi utiliser un reverse proxy NGINX ?**  
+> Pour centraliser les accès front et back via un seul port (`localhost:8080`) et simplifier le routage et la sécurité.
 
-> **2. Quel est l’intérêt d’utiliser un fichier `.env` dans un projet Docker ?**  
-> Il permet de centraliser et de sécuriser les variables d'environnement sans les hardcoder dans les fichiers de configuration.
+> **2. Quelle est la différence entre `expose:` et `ports:` dans Docker ?**  
+> `expose:` rend le port accessible aux autres services Docker seulement.  
+> `ports:` mappe un port du container vers la machine hôte pour un accès externe.
 
-> **3. Comment les volumes Docker aident-ils à gérer la persistance des données ?**  
-> Les volumes permettent de conserver les données même si le container est supprimé ou recréé.
+> **3. Pourquoi utiliser des fichiers `.env` séparés pour front et back ?**  
+> Pour mieux organiser et isoler les configurations spécifiques de chaque service.
 
-> **4. Si vous deviez ajouter un quatrième service (ex : un reverse proxy NGINX), comment l’intégreriez-vous ?**  
-> Il faudrait ajouter un nouveau service dans le `docker-compose.yml` avec l'image `nginx`, le configurer pour rediriger les requêtes vers le frontend et le backend, et s'assurer que tous les services partagent le même réseau Docker.
-
----
-
-## 📝 Note finale
-
-> Ce projet est conçu principalement pour apprendre et avoir une base solide avec **Vite**, **Node.js**, et **Docker Compose**. 
->
-> ✅ Simple, efficace, et prêt à étendre si besoin.
+> **4. Comment persister les données MongoDB ?**  
+> Grâce au volume Docker `mongo-data` qui conserve les données même si le container est recréé.
 
 ---
 
-## 📝 License
+## 📚 License
 
 Ce projet est sous licence **MIT**.
 
@@ -166,7 +152,10 @@ Ce projet est sous licence **MIT**.
 
 ## 🌟 Remerciements
 
-Merci 🚀
+Merci pour votre intérêt dans ce projet ! N’hésitez pas à contribuer ou à partager vos améliorations 🚀
 
 ---
+
+*Projet pédagogique pour maîtriser Docker, React, Node.js et MongoDB en environnement conteneurisé.*
+```
 
