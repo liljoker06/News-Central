@@ -54,10 +54,10 @@ JWT_SECRET=your_jwt_secret
 
 # Frontend API URL
 # En local
-VITE_API_URL=http://localhost:5000/api
+# VITE_API_URL=http://localhost:5000/api
 
 # En Docker Compose
-# VITE_API_URL=http://backend:5000/api
+VITE_API_URL=http://backend:5000/api
 ```
 
 > 📘 **Astuce :** Ne pas versionner les fichiers `.env`. Ils sont déjà dans `.gitignore`.
