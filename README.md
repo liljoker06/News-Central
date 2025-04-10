@@ -35,20 +35,37 @@ cd news-central
 
 ### 3. Configurer les variables d’environnement
 
-Créez un fichier `.env` dans le dossier `backend/` et ajoutez :
+Créez un fichier `.env` à la racine du projet avec le contenu suivant (modèle) :
 
-```bash
+```env
+# MongoDB URI
 MONGODB_URI=mongodb://mongo:27017/news-central
+
+# Port du serveur
 PORT=5000
 
-NEWSAPI_KEY=ta_cle_api_newsapi
-NYTIMES_API_KEY=ta_cle_api_nytimes
-GNEWS_API_KEY=ta_cle_api_gnews
+# API Keys (à récupérer via les liens ci-dessous)
+NEWSAPI_KEY=your_newsapi_key
+NYTIMES_API_KEY=your_nytimes_api_key
+GNEWS_API_KEY=your_gnews_api_key
 
-JWT_SECRET=ta_cle_secrete
+# JWT secret
+JWT_SECRET=your_jwt_secret
+
+# Frontend API URL
+# En local
+VITE_API_URL=http://localhost:5000/api
+
+# En Docker Compose
+# VITE_API_URL=http://backend:5000/api
 ```
 
-> 📘 **Astuce :** Ne pas versionner `.env`. Il est déjà dans `.gitignore`.
+> 📘 **Astuce :** Ne pas versionner les fichiers `.env`. Ils sont déjà dans `.gitignore`.
+
+> 🔗 **Liens pour générer vos clés API :**
+> - [NewsAPI](https://newsapi.org/)
+> - [New York Times API](https://developer.nytimes.com/get-started)
+> - [GNews](https://gnews.io/)
 
 ---
 
@@ -101,6 +118,7 @@ docker compose up
 │   ├── public
 │   └── package.json
 ├── .dockerignore
+├── .env
 ├── docker-compose.yml
 └── README.md
 ```
@@ -134,7 +152,7 @@ docker compose up
 
 ## 📝 Note finale
 
-> Ce projet est conçu principalement pour apprendre et avoir une base solide avec **Vite**, **Node.js**, et **Docker Compose**.
+> Ce projet est conçu principalement pour apprendre et avoir une base solide avec **Vite**, **Node.js**, et **Docker Compose**. 
 >
 > ✅ Simple, efficace, et prêt à étendre si besoin.
 
