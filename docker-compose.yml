@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   mongo:
     image: mongo:latest
@@ -12,10 +14,11 @@ services:
 
   backend:
     image: liljoker/backend:v1
-    ports:
-      - '5000:5000'
+    container_name: backend
+    expose:
+      - '5000' # expose pour NGINX, pas besoin de port externe
     env_file:
-      - .env
+      - .env.backend
     depends_on:
       - mongo
     networks:
@@ -24,12 +27,26 @@ services:
 
   front:
     image: liljoker/frontend:v1
-    ports:
-      - '5173:5173'
-    environment:
-      - NODE_ENV=development
-      - VITE_API_URL=${VITE_API_URL}
+    container_name: frontend
+    expose:
+      - '5173' # expose pour NGINX
+    env_file:
+      - .env.front
     depends_on:
+      - backend
+    networks:
+      - app-network
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - '80:80'
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - front
       - backend
     networks:
       - app-network
