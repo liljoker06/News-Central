@@ -8,6 +8,10 @@ Une application fullstack complète construite avec :
 - **MongoDB** pour la base de données
 - Le tout orchestré par **Docker Compose** avec un reverse proxy **NGINX** pour un environnement de dev & prod propre et isolé.
 
+> **Images Docker personnalisées utilisées** 🐳  
+> - Backend : [`liljoker/backend:v1`](https://hub.docker.com/r/liljoker/backend)
+> - Frontend : [`liljoker/frontend:v1`](https://hub.docker.com/r/liljoker/frontend)
+
 ---
 
 ## 🚀 Stack Technique
@@ -83,6 +87,75 @@ docker-compose up -d --build
 
 ---
 
+## 🐳 Docker Compose — Images utilisées
+
+Voici la configuration actuelle des services dans `docker-compose.yml` :
+
+```yaml
+version: '3.8'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - app-network
+    restart: always
+
+  backend:
+    image: liljoker/backend:v1
+    container_name: backend
+    expose:
+      - '5000'
+    env_file:
+      - .env.backend
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+    restart: always
+
+  front:
+    image: liljoker/frontend:v1
+    container_name: frontend
+    expose:
+      - '5173'
+    env_file:
+      - .env.front
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    restart: always
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - '8080:80'
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - front
+      - backend
+    networks:
+      - app-network
+    restart: always
+
+volumes:
+  mongo-data:
+
+networks:
+  app-network:
+    driver: bridge
+```
+
+---
+
 ## ⚙️ Commandes utiles
 
 | Commande                      | Description                           |
@@ -94,32 +167,7 @@ docker-compose up -d --build
 
 ---
 
-## 🛠️ Structure du projet
-
-```
-.
-├── backend
-│   ├── controllers
-│   ├── middlewares
-│   ├── models
-│   ├── routes
-│   ├── server.js
-│   └── .env.example
-├── front
-│   ├── src
-│   ├── public
-│   └── package.json
-├── nginx.conf
-├── .dockerignore
-├── .env.front
-├── .env.backend
-├── docker-compose.yml
-└── README.md
-```
-
----
-
-## 🧑‍💻 Développement
+## 👨‍💻 Développement
 
 - Le backend et le frontend communiquent via le proxy NGINX.
 - MongoDB est persistant grâce au volume Docker (`mongo-data`).
@@ -157,5 +205,4 @@ Merci pour votre intérêt dans ce projet ! N’hésitez pas à contribuer ou à
 ---
 
 *Projet pédagogique pour maîtriser Docker, React, Node.js et MongoDB en environnement conteneurisé.*
-```
 
